@@ -139,7 +139,7 @@ func (s *AuthState) GetSession(key string) (*oauth2.Token, error) {
 	return token, nil
 }
 
-func (s *AuthState) GetIdentity(ctx context.Context, token *oauth2.Token) (*Identity, error) {
+func (s *AuthState) GetIdentity(ctx context.Context, token *oauth2.Token) (*oidc.UserInfo, error) {
 	// Extract the ID Token from OAuth2 token.
 	rawIDToken, ok := token.Extra("id_token").(string)
 	if !ok {
@@ -152,7 +152,7 @@ func (s *AuthState) GetIdentity(ctx context.Context, token *oauth2.Token) (*Iden
 		return nil, err
 	}
 
-	var claims Identity
+	var claims oidc.UserInfo
 	if err := idToken.Claims(&claims); err != nil {
 		return nil, err
 	}
@@ -165,10 +165,4 @@ func (s *AuthState) GetIdentity(ctx context.Context, token *oauth2.Token) (*Iden
 // OIDC standard-flow.
 type AuthFlowState struct {
 	RedirectURL string
-}
-
-// Identity is the contents of the claim returned by OIDC
-type Identity struct {
-	Email    string `json:"email"`
-	Verified bool   `json:"email_verified"`
 }
